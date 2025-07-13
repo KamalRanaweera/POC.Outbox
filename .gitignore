@@ -1,0 +1,19 @@
+
+# Build results
+bin/
+obj/
+[Ll]og/
+*.log
+
+# Uncomment if you have tasks that create the following folders
+# publish/
+# out/
+
+# User-specific files
+*.user
+*.userosscache
+*.suo
+*.sln.docstates
+
+.vs
+data/
