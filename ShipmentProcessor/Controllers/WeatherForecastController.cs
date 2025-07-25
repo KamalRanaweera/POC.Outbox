@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace StoreFront.Controllers
+namespace ShipmentProcessor.Controllers
 {
     [ApiController]
     [Route("[controller]")]

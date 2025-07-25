@@ -1,38 +1,30 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Outbox.ProducerA.Models;
-using Outbox.Shared.Extensions;
-using Outbox.Shared.Interfaces;
-using Outbox.Shared.Services;
-using StoreFront.Controllers;
-using StoreFront.Models;
+using Outbox.SimpleMessageBroker.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 if (string.IsNullOrEmpty(connectionString)) // Use Sqlite
 {
-    var dbFile = "..\\data\\StoreFront.db";
+    var dbFile = "..\\data\\SimpleMessageBroker.db";
     connectionString = $"\"Data Source={dbFile}";
 
     // EF Core (Outbox message persistence)
-    builder.Services.AddDbContext<StoreFrontDbContext>(options =>
+    builder.Services.AddDbContext<MessageBrokerDbContext>(options =>
         options.UseSqlite(connectionString));
 }
 else // Use SQL Server
 {
     // EF Core (Outbox message persistence)
-    builder.Services.AddDbContext<StoreFrontDbContext>(options =>
+    builder.Services.AddDbContext<MessageBrokerDbContext>(options =>
         options.UseSqlServer(connectionString));
+    builder.Services.AddControllers();
 }
 
-builder.Services.AddAuthorization();
 builder.Services.AddControllers();
-
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-builder.ConfigureSimpleMessageBroker();
 
 var app = builder.Build();
 
@@ -48,13 +40,5 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
-
-// Register at the message broker for receiving messsages
-app.UseSimpleMessageBroker("https://localhost:8000");
-//using (var scope = app.Services.CreateScope())
-//{
-//    var messageBrokerAgent = scope.ServiceProvider.GetRequiredService<IMessageBrokerAgent>();
-//    await messageBrokerAgent.RegisterInboxEndpoint(); //
-//}
 
 app.Run();
