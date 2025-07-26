@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Outbox.Shared.Dtos
 {
-    public class EventMessage
+    public class EventMessageDto
     {
         public Guid Id { get; set; }
         public string EventType { get; set; } = String.Empty;

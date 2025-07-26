@@ -60,14 +60,15 @@ namespace StoreFront.Controllers
             item.AvailableCount -= amount;
             item.OnHoldCount += amount;
 
-            var outboxMessage = new OutboxMessage
+            var eventMessage = new EventMessage
             {
                 Id = Guid.NewGuid(),
-                EventType = "OrderPlaced",
+                MessageType = MessageType.Outbox,
+                EventName = "OrderPlaced",
                 Payload = JsonSerializer.Serialize(new PurchaseOrder() { Id = Guid.NewGuid(), ItemId = itemId }),
                 CreatedAt = DateTime.UtcNow
             };
-            _context.OutboxMessages.Add(outboxMessage);
+            _context.EventMessages.Add(eventMessage);
 
             await _context.SaveChangesAsync();
 

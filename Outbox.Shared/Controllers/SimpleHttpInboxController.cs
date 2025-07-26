@@ -6,7 +6,7 @@ namespace Outbox.Shared.Controllers
     public class SimpleHttpInboxController
     {
         [HttpPost]
-        public async Task Post([FromBody] EventMessage eventmessage)
+        public async Task Post([FromBody] EventMessageDto eventmessage)
         {
 
         }

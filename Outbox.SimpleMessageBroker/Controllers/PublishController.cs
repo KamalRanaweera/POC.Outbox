@@ -11,7 +11,7 @@ namespace Outbox.SimpleMessageBroker.Controllers
     public class PublishController : ControllerBase
     {
         [HttpPost]
-        public async Task Post([FromBody] EventMessage message)
+        public async Task Post([FromBody] EventMessageDto message)
         {
             Console.WriteLine(message);
         }

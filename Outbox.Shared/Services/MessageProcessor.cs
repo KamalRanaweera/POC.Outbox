@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Hangfire.States;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Outbox.Shared;
 using Outbox.Shared.Dtos;
@@ -7,29 +8,24 @@ using Outbox.Shared.Models;
 
 namespace Outbox.OutboxShared.Services
 {
-    public class OutboxProcessor: IOutboxProcessor
+    public class MessageProcessor: IMessageProcessor
     {
-        private readonly OutboxDbContext _dbContext;
+        private readonly EventDbContext _dbContext;
         private readonly IMessageBrokerAgent _messageBrokerAgent;
-        private readonly ILogger<OutboxProcessor> _logger;
+        private readonly IInboxMessageProcessor _inboxMessageProcessor;
+        private readonly ILogger<MessageProcessor> _logger;
 
-        public OutboxProcessor(OutboxDbContext dbContext, IMessageBrokerAgent messageBrokerAgent, ILogger<OutboxProcessor> logger)
+        public MessageProcessor(EventDbContext dbContext, IMessageBrokerAgent messageBrokerAgent, IInboxMessageProcessor inboxMessageProcessor, ILogger<MessageProcessor> logger)
         {
             _dbContext = dbContext;
             _messageBrokerAgent = messageBrokerAgent;
+            _inboxMessageProcessor = inboxMessageProcessor;
             _logger = logger;
         }
 
-        public async Task<List<OutboxMessage>> GetMessages()
+        public async Task ProcessMessagesAsync(CancellationToken cancellationToken)
         {
-            return await _dbContext.OutboxMessages
-                .Where(m => !m.Processed)
-                .ToListAsync();
-        }
-
-        public async Task ProcessPendingMessagesAsync(CancellationToken cancellationToken)
-        {
-            var messages = await _dbContext.OutboxMessages
+            var messages = await _dbContext.EventMessages
                 .Where(m => !m.Processed)
                 .ToListAsync(cancellationToken);
 
@@ -41,7 +37,7 @@ namespace Outbox.OutboxShared.Services
 
         public async Task ProcessMessageByIdAsync(Guid messageId, CancellationToken cancellationToken)
         {
-            var message = await _dbContext.OutboxMessages
+            var message = await _dbContext.EventMessages
                 .FirstOrDefaultAsync(m => m.Id == messageId, cancellationToken);
 
             if (message is null)
@@ -51,11 +47,15 @@ namespace Outbox.OutboxShared.Services
             await _dbContext.SaveChangesAsync(cancellationToken);
         }
 
-        private async Task ProcessMessageAsync(OutboxMessage message)
+        private async Task ProcessMessageAsync(EventMessage message)
         {
-            bool processingStatus = await _messageBrokerAgent.Publish(message.EventType, message.Payload);
-            message.Processed = processingStatus;
+            if(message.MessageType == MessageType.Outbox)
+                message.Processed = await _messageBrokerAgent.Publish(message.EventName, message.Payload);
+            else
+                message.Processed = await _inboxMessageProcessor.ProcessMessageAsync(message);
+
             message.ProcessedAt = DateTime.UtcNow;
+
         }
     }
 }
