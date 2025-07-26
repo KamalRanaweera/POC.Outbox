@@ -7,7 +7,7 @@ namespace Outbox.Shared.Controllers
         [HttpPost]
         public async Task Post(string eventName, string eventPayload)
         {
-
+            Console.WriteLine($"{eventName}: {eventPayload}");
         }
     }
 }

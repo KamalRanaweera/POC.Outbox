@@ -21,16 +21,18 @@ namespace Outbox.Shared.Extensions
             //Registering the SimpleMessageBrokerAgent service
             builder.Services.AddScoped<IMessageBrokerAgent, SimpleMessageBrokerAgent>();
 
+            builder.Services.AddHttpClient();
+
             return builder;
         }
 
-        public static async Task UseSimpleMessageBroker(this IHost host, string simpleMessageBrokerRootUrl, string inboxEndpoint)
+        public static async Task UseSimpleMessageBroker(this IHost host, string inboxEndpoint)
         {
             using (var scope = host.Services.CreateScope())
             {
                 var messageBrokerAgent = scope.ServiceProvider.GetRequiredService<IMessageBrokerAgent>() as SimpleMessageBrokerAgent;
                 if (messageBrokerAgent != null)
-                    await messageBrokerAgent.RegisterInboxEndpoint("/inbox");
+                    await messageBrokerAgent.SubscribeToMessages(inboxEndpoint ?? "/inbox");
                 else
                 {
                     throw new Exception("Could not resolve IMessageBrokerAgent of type SimpleMessageBrokerAgent");

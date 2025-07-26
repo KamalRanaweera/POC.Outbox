@@ -34,6 +34,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 // Register at the message broker for receiving messsages
-await app.UseSimpleMessageBroker("https://localhost:8000", "/inbox");
+await app.UseSimpleMessageBroker("/inbox");
 
 await app.RunAsync();

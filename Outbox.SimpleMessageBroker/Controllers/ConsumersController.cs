@@ -16,7 +16,7 @@ namespace Outbox.SimpleMessageBroker.Controllers
         }
 
         [HttpPost("subscribe")]
-        public async Task Subscribe(string endpoint)
+        public async Task Subscribe([FromBody] string endpoint)
         {
             if(!await _context.Consumers.AnyAsync(c => c.Endpoint == endpoint))
             {
@@ -25,7 +25,7 @@ namespace Outbox.SimpleMessageBroker.Controllers
             }
         }
 
-        [HttpPost("unsubscribe")]
+        [HttpPost("unsubscribe/{id}")]
         public async Task<StatusCodeResult> Unsubscribe(Guid id)
         {
             var entry = await _context.Consumers.FindAsync(id);
