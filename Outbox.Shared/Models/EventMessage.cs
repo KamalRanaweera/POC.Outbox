@@ -8,7 +8,7 @@
         public string Payload { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public bool Processed { get; set; } = false;
-        public DateTime? ProcessedAt { get; set; }
+        public DateTime? ProcessedAt { get; set; } = null;
 
     }
 

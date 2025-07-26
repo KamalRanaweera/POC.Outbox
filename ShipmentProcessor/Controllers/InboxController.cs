@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Outbox.Shared.Controllers;
+using Outbox.Shared.Models;
 
 namespace ShipmentProcessor.Controllers
 {
@@ -8,5 +9,9 @@ namespace ShipmentProcessor.Controllers
     [ApiController]
     public class InboxController : SimpleHttpInboxController
     {
+        public InboxController(EventDbContext db)
+            : base(db)
+        {
+        }
     }
 }

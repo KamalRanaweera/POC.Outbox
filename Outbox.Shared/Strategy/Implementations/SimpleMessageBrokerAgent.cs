@@ -41,7 +41,7 @@ namespace Outbox.Shared.Strategy.Implementations
 
         public async Task<bool> Publish(string eventName, object payload)
         {
-            return true;
+            return false;
         }
 
         public async Task SubscribeToMessages(string inboxEndpoint)
