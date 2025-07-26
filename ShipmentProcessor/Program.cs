@@ -3,8 +3,18 @@ using Outbox.Shared.Controllers;
 using Outbox.Shared.Extensions;
 using Outbox.Shared.Interfaces;
 using Outbox.Shared.Services;
+using ShipmentProcessor.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+
+#region Database Configuration
+//var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+//if (string.IsNullOrEmpty(connectionString)) // Use Sqlite
+//    builder.ConfigureSQLite<ShipmentDbContext>("..\\data\\ShipmentProcessor.db");
+//else // Use SQL Server
+//    builder.ConfigureSqlServer<ShipmentDbContext>(connectionString);
+#endregion
+
 
 // Add services to the container.
 

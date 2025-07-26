@@ -1,29 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Outbox.ProducerA.Models;
 using Outbox.Shared.Extensions;
-using Outbox.Shared.Interfaces;
-using Outbox.Shared.Services;
-using StoreFront.Controllers;
 using StoreFront.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+#region Database Configuration
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 if (string.IsNullOrEmpty(connectionString)) // Use Sqlite
-{
-    var dbFile = "..\\data\\StoreFront.db";
-    connectionString = $"\"Data Source={dbFile}";
-
-    // EF Core (Outbox message persistence)
-    builder.Services.AddDbContext<StoreFrontDbContext>(options =>
-        options.UseSqlite(connectionString));
-}
+    builder.ConfigureSQLite<StoreFrontDbContext>("..\\data\\StoreFront.db");
 else // Use SQL Server
-{
-    // EF Core (Outbox message persistence)
-    builder.Services.AddDbContext<StoreFrontDbContext>(options =>
-        options.UseSqlServer(connectionString));
-}
+    builder.ConfigureSqlServer<StoreFrontDbContext>(connectionString);
+#endregion
 
 builder.Services.AddAuthorization();
 builder.Services.AddControllers();

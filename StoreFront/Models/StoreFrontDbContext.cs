@@ -1,9 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Outbox.Shared;
 using Outbox.Shared.Models;
-using StoreFront.Models;
 
-namespace Outbox.ProducerA.Models
+namespace StoreFront.Models
 {
     public class StoreFrontDbContext : OutboxDbContext
     {

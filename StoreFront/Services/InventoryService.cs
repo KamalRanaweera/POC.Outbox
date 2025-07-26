@@ -1,4 +1,4 @@
-﻿using Outbox.ProducerA.Models;
+﻿using StoreFront.Models;
 
 namespace StoreFront.Services
 {

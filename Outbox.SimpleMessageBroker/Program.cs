@@ -1,25 +1,17 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Hangfire;
+using Microsoft.EntityFrameworkCore;
+using Outbox.Shared.Extensions;
 using Outbox.SimpleMessageBroker.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+#region Database Configuration
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 if (string.IsNullOrEmpty(connectionString)) // Use Sqlite
-{
-    var dbFile = "..\\data\\SimpleMessageBroker.db";
-    connectionString = $"\"Data Source={dbFile}";
-
-    // EF Core (Outbox message persistence)
-    builder.Services.AddDbContext<MessageBrokerDbContext>(options =>
-        options.UseSqlite(connectionString));
-}
+    builder.ConfigureSQLite<MessageBrokerDbContext>("..\\data\\SimpleMessageBroker.db");
 else // Use SQL Server
-{
-    // EF Core (Outbox message persistence)
-    builder.Services.AddDbContext<MessageBrokerDbContext>(options =>
-        options.UseSqlServer(connectionString));
-    builder.Services.AddControllers();
-}
+    builder.ConfigureSqlServer<MessageBrokerDbContext>(connectionString);
+#endregion
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -34,6 +26,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 
 app.UseHttpsRedirection();
 
