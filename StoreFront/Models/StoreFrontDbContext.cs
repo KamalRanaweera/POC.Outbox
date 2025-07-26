@@ -7,6 +7,7 @@ namespace StoreFront.Models
     public class StoreFrontDbContext : EventDbContext
     {
         public StoreFrontDbContext(DbContextOptions<StoreFrontDbContext> options) : base(options) { }
+
         public DbSet<InventoryRecord> Inventory => Set<InventoryRecord>();
 
     }

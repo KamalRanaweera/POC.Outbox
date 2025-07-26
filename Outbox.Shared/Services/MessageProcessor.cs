@@ -2,9 +2,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Outbox.Shared;
-using Outbox.Shared.Dtos;
 using Outbox.Shared.Interfaces;
 using Outbox.Shared.Models;
+using Outbox.Shared.Strategy.Abstractions;
 
 namespace Outbox.OutboxShared.Services
 {

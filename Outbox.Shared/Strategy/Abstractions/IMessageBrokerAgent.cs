@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Outbox.Shared.Interfaces
+namespace Outbox.Shared.Strategy.Abstractions
 {
     public interface IMessageBrokerAgent
     {

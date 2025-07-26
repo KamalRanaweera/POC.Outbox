@@ -8,7 +8,5 @@ namespace ShipmentProcessor.Models
     {
         public ShipmentDbContext(DbContextOptions<ShipmentDbContext> options) : base(options) { }
 
-        public DbSet<Shipment> Shipments => Set<Shipment>();
-
     }
 }

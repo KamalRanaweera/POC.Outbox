@@ -12,8 +12,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 using Outbox.Shared.Controllers;
-using Outbox.Shared.Interfaces;
-using Outbox.Shared.Services;
+using Outbox.Shared.Strategy.Abstractions;
+using Outbox.Shared.Strategy.Implementations;
 
 namespace Outbox.Shared.Extensions
 {

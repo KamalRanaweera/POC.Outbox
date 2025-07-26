@@ -1,9 +1,5 @@
 ﻿using Hangfire;
-using Microsoft.AspNetCore.Mvc.ApplicationParts;
-using Outbox.Shared.Controllers;
 using Outbox.Shared.Extensions;
-using Outbox.Shared.Interfaces;
-using Outbox.Shared.Services;
 using ShipmentProcessor.Models;
 
 var builder = WebApplication.CreateBuilder(args);
