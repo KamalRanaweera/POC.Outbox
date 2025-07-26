@@ -17,7 +17,7 @@ using Outbox.Shared.Services;
 
 namespace Outbox.Shared.Extensions
 {
-    public static class OutboxExtensions
+    public static class SimpleMessageBrokerAgentExtensions
     {
         public static IHostApplicationBuilder ConfigureSimpleMessageBrokerAgent(this IHostApplicationBuilder builder)
         {
@@ -43,43 +43,5 @@ namespace Outbox.Shared.Extensions
             }
 
         }
-
-
-
-        #region Database Configuration
-        public static void ConfigureSqlServer<T>(this IHostApplicationBuilder builder, string connectionString) where T: DbContext
-        {
-            // EF Core (Outbox message persistence)
-            builder.Services.AddDbContext<T>(options => options.UseSqlServer(connectionString));
-
-            // Hangfire configuration
-            builder.Services.AddHangfire(configuration =>
-            {
-                configuration
-                .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
-                .UseSimpleAssemblyNameTypeSerializer()
-                .UseRecommendedSerializerSettings()
-                .UseSqlServerStorage(connectionString);
-            });
-        }
-
-        public static void ConfigureSQLite<T>(this IHostApplicationBuilder builder, string dbFile) where T: DbContext
-        {
-            var connectionString = $"\"Data Source={dbFile}";
-
-            // EF Core (Outbox message persistence)
-            builder.Services.AddDbContext<T>(options => options.UseSqlite(connectionString));
-
-            // Hangfire configuration
-            builder.Services.AddHangfire(configuration =>
-            {
-                configuration
-                    .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
-                    .UseSimpleAssemblyNameTypeSerializer()
-                    .UseRecommendedSerializerSettings()
-                    .UseSQLiteStorage(connectionString);
-            });
-        }
-        #endregion
     }
 }
