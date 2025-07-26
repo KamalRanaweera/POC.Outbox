@@ -1,42 +1,51 @@
-﻿using StoreFront.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using StoreFront.Interfaces;
+using StoreFront.Models;
 
 namespace StoreFront.Services
 {
-    public class InventoryService
+    public class InventoryService : IInventoryService
     {
         private readonly StoreFrontDbContext _db;
+        public StoreFrontDbContext Db => _db;
         public InventoryService(StoreFrontDbContext db)
         {
             _db = db;
         }
 
-        public void AddItem(string name, int availableCount)
+        public async Task<List<InventoryRecord>> List()
+        {
+            return await _db.Inventory.ToListAsync();
+        }
+
+        public async Task AddItem(string name, int availableCount)
         {
             _db.Inventory.Add(new Models.InventoryRecord() { Name = name, AvailableCount = availableCount });
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
         }
 
-        public void RemoveItem(int itemId)
+        public async Task<bool> RemoveItem(int itemId)
         {
             var item = _db.Inventory.FirstOrDefault(x => x.Id == itemId);
-            if (item != null)
-            {
-                _db.Remove(item);
-                _db.SaveChanges();
-            }
+            if (item == null)
+                return false;
+
+            _db.Remove(item);
+            await _db.SaveChangesAsync();
+            return true;
         }
 
-        public void AddStock(int itemId, int quantity)
+        public async Task AddStock(int itemId, int quantity)
         {
             var item = _db.Inventory.FirstOrDefault(x => x.Id == itemId);
             if (item != null)
             {
                 item.AvailableCount += quantity;
-                _db.SaveChanges();
+                await _db.SaveChangesAsync();
             }
         }
 
-        public void Purchase(int itemId, int quantity)
+        public async Task Purchase(int itemId, int quantity)
         {
             var item = _db.Inventory.FirstOrDefault(x => x.Id == itemId);
             if (item != null)
@@ -46,9 +55,23 @@ namespace StoreFront.Services
 
                 item.AvailableCount -= quantity;
                 item.OnHoldCount += quantity;
-                _db.SaveChanges();
+                await _db.SaveChangesAsync();
             }
         }
 
+        public async Task ResetQuantity(int count = 10, int maxItemTypes = 10)
+        {
+            foreach(var item in _db.Inventory)
+                item.AvailableCount = count;
+
+            for (int i = _db.Inventory.Count(); i < maxItemTypes; i++)
+                _db.Inventory.Add(new InventoryRecord
+                {
+                    Name = $"Product {i + 1}",
+                    AvailableCount = count,
+                });
+
+            await _db.SaveChangesAsync();
+        }
     }
 }

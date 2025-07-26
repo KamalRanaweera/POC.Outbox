@@ -9,6 +9,7 @@ namespace StoreFront.Models
         public StoreFrontDbContext(DbContextOptions<StoreFrontDbContext> options) : base(options) { }
 
         public DbSet<InventoryRecord> Inventory => Set<InventoryRecord>();
-
+        public DbSet<OrderItem> OrderItems => Set<OrderItem>();
+        public DbSet<Order> Orders => Set<Order>();
     }
 }

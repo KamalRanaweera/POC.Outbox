@@ -1,7 +1,9 @@
 ﻿using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using Outbox.Shared.Extensions;
+using StoreFront.Interfaces;
 using StoreFront.Models;
+using StoreFront.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +23,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.ConfigureSimpleMessageBrokerAgent();
+builder.Services.AddScoped<IInventoryService, InventoryService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddAutoMapper(typeof(Program));
 
 var app = builder.Build();
 

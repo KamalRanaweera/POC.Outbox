@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Outbox.Shared;
 using Outbox.Shared.Dtos;
+using StoreFront.Interfaces;
 using StoreFront.Models;
 using System.Text.Json;
 
@@ -11,68 +12,24 @@ namespace StoreFront.Controllers
     [ApiController]
     public class InventoryController : ControllerBase
     {
-        private readonly StoreFrontDbContext _context;
+        private readonly IInventoryService _inventoryService;
 
-        public InventoryController(StoreFrontDbContext context)
+        public InventoryController(IInventoryService inventoryService)
         {
-            _context = context;
+            _inventoryService = inventoryService;
         }
 
         // GET: api/Inventory
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<InventoryRecord>>> GetInventory()
+        public async Task<ActionResult<List<InventoryRecord>>> GetInventory()
         {
-            return await _context.Inventory.ToListAsync();
+            return Ok(await _inventoryService.List());
         }
 
-        [HttpPost("refill")]
-        public async Task Refill()
+        [HttpPost("reset-inventory")]
+        public async Task ResetQuantity()
         {
-            var currentItems = await _context.Inventory.ToListAsync();
-            foreach (var item in currentItems)
-                item.AvailableCount = 10;
-
-            for (int i=currentItems.Count;  i<10; i++)
-                _context.Inventory.Add(new InventoryRecord()
-                {
-                    Name = $"Product {i}",
-                    AvailableCount = 10
-                });
-
-            await _context.SaveChangesAsync();
-        }
-
-        [HttpPost("buy")]
-        public async Task Buy(int itemId, int amount, bool priority = false)
-        {
-            using var tx = await _context.Database.BeginTransactionAsync();
-
-            var item = await _context.Inventory.FirstOrDefaultAsync(x => x.Id == itemId);
-            if (item == null)
-                throw new Exception("Item not found");
-
-            if (item.AvailableCount == 0)
-                throw new Exception("Out of stock");
-
-            if (item.AvailableCount < amount)
-                throw new Exception("Insufficient stock");
-
-            item.AvailableCount -= amount;
-            item.OnHoldCount += amount;
-
-            var eventMessage = new EventMessage
-            {
-                Id = Guid.NewGuid(),
-                MessageType = MessageType.Outbox,
-                EventName = "OrderPlaced",
-                Payload = JsonSerializer.Serialize(new PurchaseOrder() { Id = Guid.NewGuid(), ItemId = itemId }),
-                CreatedAt = DateTime.UtcNow
-            };
-            _context.EventMessages.Add(eventMessage);
-
-            await _context.SaveChangesAsync();
-
-            await tx.CommitAsync();
+            await _inventoryService.ResetQuantity(10, 10);
         }
 
 
@@ -80,21 +37,7 @@ namespace StoreFront.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteInventoryRecord(int id)
         {
-            var inventoryRecord = await _context.Inventory.FindAsync(id);
-            if (inventoryRecord == null)
-            {
-                return NotFound();
-            }
-
-            _context.Inventory.Remove(inventoryRecord);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool InventoryRecordExists(int id)
-        {
-            return _context.Inventory.Any(e => e.Id == id);
+            return await _inventoryService.RemoveItem(id) ? Ok() : NoContent();
         }
     }
 }
