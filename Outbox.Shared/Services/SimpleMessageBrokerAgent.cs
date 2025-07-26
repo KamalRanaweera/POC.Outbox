@@ -12,12 +12,11 @@ namespace Outbox.Shared.Services
     public class SimpleMessageBrokerAgent : IMessageBrokerAgent
     {
         private readonly IConfiguration _configuration;
-        private readonly string _inboxEndpoint;
+        private readonly string _siteRoot;
         public SimpleMessageBrokerAgent(IConfiguration configuration)
         {
             _configuration = configuration;
-            var siteRoot = _configuration.GetSection("Outbox:ReceiverInboxEndpoint").Value!.TrimEnd('/');
-            _inboxEndpoint = $"{siteRoot}/inbox";
+            _siteRoot = _configuration.GetSection("Outbox:AppSiteRoot").Value!.TrimEnd('/');
         }
 
         public async Task Publish(string eventName, object payload)
@@ -25,9 +24,10 @@ namespace Outbox.Shared.Services
 
         }
 
-        public async Task RegisterInboxEndpoint()
+        public async Task RegisterInboxEndpoint(string inboxEndpoint)
         {
-            Console.WriteLine($"Registered: {_inboxEndpoint}");
+            var inboxEndpointUrl = $"{_siteRoot}/{inboxEndpoint.Trim('/')}";
+            Console.WriteLine($"Registered: {inboxEndpointUrl}");
         }
     }
 }

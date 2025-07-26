@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Outbox.Shared.Controllers;
 
-namespace StoreFront.Controllers
+namespace ShipmentProcessor.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

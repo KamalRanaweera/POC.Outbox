@@ -50,11 +50,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 // Register at the message broker for receiving messsages
-app.UseSimpleMessageBroker("https://localhost:8000");
-//using (var scope = app.Services.CreateScope())
-//{
-//    var messageBrokerAgent = scope.ServiceProvider.GetRequiredService<IMessageBrokerAgent>();
-//    await messageBrokerAgent.RegisterInboxEndpoint(); //
-//}
+await app.UseSimpleMessageBroker("https://localhost:8000", "/inbox");
 
 app.Run();

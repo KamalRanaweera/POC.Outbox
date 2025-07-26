@@ -2,7 +2,7 @@
 
 namespace Outbox.Shared.Controllers
 {
-    public class DefaultInboxController
+    public class SimpleHttpInboxController
     {
         [HttpPost]
         public async Task Post(string eventName, string eventPayload)
