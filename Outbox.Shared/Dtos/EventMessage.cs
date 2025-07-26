@@ -8,5 +8,8 @@ namespace Outbox.Shared.Dtos
 {
     public class EventMessage
     {
+        public Guid Id { get; set; }
+        public string EventType { get; set; } = String.Empty;
+        public string Payload { get; set; } = String.Empty;
     }
 }

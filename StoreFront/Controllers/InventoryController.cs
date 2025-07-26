@@ -39,7 +39,11 @@ namespace StoreFront.Controllers
                 item.AvailableCount = 10;
 
             for (int i=currentItems.Count;  i<10; i++)
-                _context.Inventory.Add(new InventoryRecord() { AvailableCount = 10 });
+                _context.Inventory.Add(new InventoryRecord()
+                {
+                    Name = $"Product {i}",
+                    AvailableCount = 10
+                });
 
             await _context.SaveChangesAsync();
         }

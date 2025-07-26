@@ -1,26 +1,22 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Outbox.Shared;
+using Outbox.Shared.Dtos;
+using Outbox.Shared.Interfaces;
 using Outbox.Shared.Models;
 
 namespace Outbox.OutboxShared.Services
 {
-    public interface IOutboxProcessorService
-    {
-        Task<List<OutboxMessage>> GetMessages();
-        Task ProcessPendingMessagesAsync(CancellationToken cancellationToken);
-        Task ProcessMessageByIdAsync(Guid messageId, CancellationToken cancellationToken);
-    }
-
-
-    public class OutboxProcessorService: IOutboxProcessorService
+    public class OutboxProcessor: IOutboxProcessor
     {
         private readonly OutboxDbContext _dbContext;
-        private readonly ILogger<OutboxProcessorService> _logger;
+        private readonly IMessageBrokerAgent _messageBrokerAgent;
+        private readonly ILogger<OutboxProcessor> _logger;
 
-        public OutboxProcessorService(OutboxDbContext dbContext, ILogger<OutboxProcessorService> logger)
+        public OutboxProcessor(OutboxDbContext dbContext, IMessageBrokerAgent messageBrokerAgent, ILogger<OutboxProcessor> logger)
         {
             _dbContext = dbContext;
+            _messageBrokerAgent = messageBrokerAgent;
             _logger = logger;
         }
 
@@ -38,13 +34,7 @@ namespace Outbox.OutboxShared.Services
                 .ToListAsync(cancellationToken);
 
             foreach (var message in messages)
-            {
-                // Simulate processing
-                _logger.LogInformation("Processing message {MessageId}", message.Id);
-
-                message.Processed = true;
-                message.ProcessedAt = DateTime.UtcNow;
-            }
+                await ProcessMessageAsync(message);
 
             await _dbContext.SaveChangesAsync(cancellationToken);
         }
@@ -54,15 +44,18 @@ namespace Outbox.OutboxShared.Services
             var message = await _dbContext.OutboxMessages
                 .FirstOrDefaultAsync(m => m.Id == messageId, cancellationToken);
 
-            if (message is null) return;
+            if (message is null)
+                return;
 
-            // Simulate processing
-            _logger.LogInformation("Manually processing message {MessageId}", message.Id);
-
-            message.Processed = true;
-            message.ProcessedAt = DateTime.UtcNow;
-
+            await ProcessMessageAsync(message);
             await _dbContext.SaveChangesAsync(cancellationToken);
+        }
+
+        private async Task ProcessMessageAsync(OutboxMessage message)
+        {
+            bool processingStatus = await _messageBrokerAgent.Publish(message.EventType, message.Payload);
+            message.Processed = processingStatus;
+            message.ProcessedAt = DateTime.UtcNow;
         }
     }
 }

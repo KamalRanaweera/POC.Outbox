@@ -25,4 +25,8 @@
 	  <Folder Include="Migrations\" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\Outbox.Shared\Outbox.Shared.csproj" />
+	</ItemGroup>
+
 </Project>

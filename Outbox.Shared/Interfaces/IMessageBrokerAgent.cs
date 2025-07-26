@@ -8,6 +8,6 @@ namespace Outbox.Shared.Interfaces
 {
     public interface IMessageBrokerAgent
     {
-        Task Publish(string eventName, object payload);
+        Task<bool> Publish(string eventName, object payload);
     }
 }

@@ -39,9 +39,9 @@ namespace Outbox.Shared.Services
             _httpClient = httpClientFactory.CreateClient();
         }
 
-        public async Task Publish(string eventName, object payload)
+        public async Task<bool> Publish(string eventName, object payload)
         {
-
+            return true;
         }
 
         public async Task SubscribeToMessages(string inboxEndpoint)
