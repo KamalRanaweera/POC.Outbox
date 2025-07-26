@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Hangfire;
+using Microsoft.EntityFrameworkCore;
 using Outbox.Shared.Extensions;
 using StoreFront.Models;
 
@@ -6,9 +7,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 #region Database Configuration
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-if (string.IsNullOrEmpty(connectionString)) // Use Sqlite
+if (string.IsNullOrEmpty(connectionString))
     builder.ConfigureSQLite<StoreFrontDbContext>("..\\data\\StoreFront.db");
-else // Use SQL Server
+else
     builder.ConfigureSqlServer<StoreFrontDbContext>(connectionString);
 #endregion
 
@@ -19,7 +20,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.ConfigureSimpleMessageBroker();
+builder.ConfigureSimpleMessageBrokerAgent();
 
 var app = builder.Build();
 
@@ -28,6 +29,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseHangfireDashboard("/hangfire");
 }
 
 app.UseHttpsRedirection();
@@ -37,6 +39,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 // Register at the message broker for receiving messsages
-await app.UseSimpleMessageBroker("/inbox");
+await app.UseSimpleMessageBrokerAgent("/inbox");
 
 app.Run();

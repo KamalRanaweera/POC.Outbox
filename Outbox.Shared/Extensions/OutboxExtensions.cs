@@ -1,6 +1,7 @@
 ﻿
 using Hangfire;
 using Hangfire.Storage.SQLite;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Controllers;
@@ -18,7 +19,7 @@ namespace Outbox.Shared.Extensions
 {
     public static class OutboxExtensions
     {
-        public static IHostApplicationBuilder ConfigureSimpleMessageBroker(this IHostApplicationBuilder builder)
+        public static IHostApplicationBuilder ConfigureSimpleMessageBrokerAgent(this IHostApplicationBuilder builder)
         {
             //Registering the SimpleMessageBrokerAgent service
             builder.Services.AddScoped<IMessageBrokerAgent, SimpleMessageBrokerAgent>();
@@ -28,7 +29,7 @@ namespace Outbox.Shared.Extensions
             return builder;
         }
 
-        public static async Task UseSimpleMessageBroker(this IHost host, string inboxEndpoint)
+        public static async Task UseSimpleMessageBrokerAgent(this IHost host, string inboxEndpoint)
         {
             using (var scope = host.Services.CreateScope())
             {
@@ -41,8 +42,9 @@ namespace Outbox.Shared.Extensions
                 }
             }
 
-
         }
+
+
 
         #region Database Configuration
         public static void ConfigureSqlServer<T>(this IHostApplicationBuilder builder, string connectionString) where T: DbContext
@@ -51,11 +53,14 @@ namespace Outbox.Shared.Extensions
             builder.Services.AddDbContext<T>(options => options.UseSqlServer(connectionString));
 
             // Hangfire configuration
-            GlobalConfiguration.Configuration
+            builder.Services.AddHangfire(configuration =>
+            {
+                configuration
                 .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
                 .UseSimpleAssemblyNameTypeSerializer()
                 .UseRecommendedSerializerSettings()
                 .UseSqlServerStorage(connectionString);
+            });
         }
 
         public static void ConfigureSQLite<T>(this IHostApplicationBuilder builder, string dbFile) where T: DbContext
@@ -66,11 +71,14 @@ namespace Outbox.Shared.Extensions
             builder.Services.AddDbContext<T>(options => options.UseSqlite(connectionString));
 
             // Hangfire configuration
-            GlobalConfiguration.Configuration
-                .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
-                .UseSimpleAssemblyNameTypeSerializer()
-                .UseRecommendedSerializerSettings()
-                .UseSQLiteStorage(connectionString);
+            builder.Services.AddHangfire(configuration =>
+            {
+                configuration
+                    .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+                    .UseSimpleAssemblyNameTypeSerializer()
+                    .UseRecommendedSerializerSettings()
+                    .UseSQLiteStorage(connectionString);
+            });
         }
         #endregion
     }

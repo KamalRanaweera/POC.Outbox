@@ -7,9 +7,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 #region Database Configuration
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-if (string.IsNullOrEmpty(connectionString)) // Use Sqlite
+if (string.IsNullOrEmpty(connectionString))
     builder.ConfigureSQLite<MessageBrokerDbContext>("..\\data\\SimpleMessageBroker.db");
-else // Use SQL Server
+else
     builder.ConfigureSqlServer<MessageBrokerDbContext>(connectionString);
 #endregion
 
@@ -18,15 +18,18 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddHangfireServer();
+
 var app = builder.Build();
+app.UseHangfireDashboard("/hangfire");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseHangfireDashboard("/hangfire");
 }
-
 
 app.UseHttpsRedirection();
 

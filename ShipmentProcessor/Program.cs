@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.ApplicationParts;
+﻿using Hangfire;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Outbox.Shared.Controllers;
 using Outbox.Shared.Extensions;
 using Outbox.Shared.Interfaces;
@@ -8,11 +9,11 @@ using ShipmentProcessor.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 #region Database Configuration
-//var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-//if (string.IsNullOrEmpty(connectionString)) // Use Sqlite
-//    builder.ConfigureSQLite<ShipmentDbContext>("..\\data\\ShipmentProcessor.db");
-//else // Use SQL Server
-//    builder.ConfigureSqlServer<ShipmentDbContext>(connectionString);
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+if (string.IsNullOrEmpty(connectionString))
+    builder.ConfigureSQLite<ShipmentDbContext>("..\\data\\ShipmentProcessor.db");
+else
+    builder.ConfigureSqlServer<ShipmentDbContext>(connectionString);
 #endregion
 
 
@@ -23,7 +24,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.ConfigureSimpleMessageBroker();
+builder.ConfigureSimpleMessageBrokerAgent();
 
 builder.Services.AddAuthorization();
 builder.Services.AddControllers();
@@ -35,6 +36,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseHangfireDashboard("/hangfire");
 }
 
 app.UseHttpsRedirection();
@@ -44,6 +46,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 // Register at the message broker for receiving messsages
-await app.UseSimpleMessageBroker("/inbox");
+await app.UseSimpleMessageBrokerAgent("/inbox");
 
 await app.RunAsync();
