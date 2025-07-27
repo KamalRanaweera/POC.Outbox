@@ -18,7 +18,7 @@ namespace Outbox.Shared.Extensions
             //// Configure recurrent Hangfire job to process event messages
             RecurringJob.AddOrUpdate<IMessageProcessor>(
                 jobName,
-                processor => processor.ProcessMessages(),
+                processor => processor.ProcessMessagesAsync(),
                 cronTiming
             );
         }

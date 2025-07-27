@@ -37,20 +37,6 @@ namespace Outbox.OutboxShared.Services
             await _dbContext.SaveChangesAsync();
         }
 
-        public void ProcessMessages()
-        {
-            Console.WriteLine($"\n{DateTime.Now}: Called ProcessMessages()");
-
-            var messages = _dbContext.EventMessages
-                .Where(m => !m.Processed)
-                .ToList();
-
-            foreach (var message in messages)
-                ProcessMessageAsync(message).Wait();
-
-            _dbContext.SaveChanges();
-        }
-
         public async Task ProcessMessageByIdAsync(Guid messageId)
         {
             var message = await _dbContext.EventMessages
