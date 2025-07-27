@@ -8,6 +8,7 @@ namespace Outbox.Shared.Extensions
     {
         public static IHostApplicationBuilder ConfigureLogging(this IHostApplicationBuilder builder)
         {
+            #region Serilog Configuration
             Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(builder.Configuration) // reads from appsettings.json
                 .Enrich.FromLogContext()
@@ -18,6 +19,20 @@ namespace Outbox.Shared.Extensions
             // Attach Serilog to logging pipeline
             builder.Logging.ClearProviders();
             builder.Logging.AddSerilog();
+            #endregion
+
+            #region Configure Console Standar Output to a File
+            var consoleLogDir = Path.Combine(AppContext.BaseDirectory, "Logs");
+            Directory.CreateDirectory(consoleLogDir);
+            var logFilePath = Path.Combine(consoleLogDir, "console.log");
+            var fileStream = new FileStream(logFilePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
+            var writer = new StreamWriter(fileStream)
+            {
+                AutoFlush = true
+            };
+            Console.SetOut(writer); // Redirects Console.WriteLine
+            #endregion
+
 
             return builder;
         }
