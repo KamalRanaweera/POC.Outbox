@@ -7,7 +7,7 @@ namespace ShipmentProcessor.Strategy.Implementations
     {
         public async Task<bool> ProcessMessageAsync(EventMessage message)
         {
-            Console.WriteLine($"Shipment Processor Inbox: {message.EventName} > {message.Payload}");
+            Console.WriteLine($"{DateTime.Now}: Shipment Processor Inbox: <{message.EventName}, {message.Payload}>");
             await Task.CompletedTask;
             return true;
         }

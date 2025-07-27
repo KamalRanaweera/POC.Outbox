@@ -39,7 +39,7 @@ namespace Outbox.OutboxShared.Services
 
         public void ProcessMessages()
         {
-            Console.WriteLine("Called ProcessMessages()");
+            Console.WriteLine($"\n{DateTime.Now}: Called ProcessMessages()");
 
             var messages = _dbContext.EventMessages
                 .Where(m => !m.Processed)
@@ -66,7 +66,7 @@ namespace Outbox.OutboxShared.Services
         private async Task ProcessMessageAsync(EventMessage message)
         {
             if(message.MessageType == MessageType.Outbox)
-                message.Processed = await _messageBrokerAgent.Publish(message);
+                message.Processed = await _messageBrokerAgent.PublishToBroker(message);
             else
                 message.Processed = await _inboxMessageProcessor.ProcessMessageAsync(message);
 

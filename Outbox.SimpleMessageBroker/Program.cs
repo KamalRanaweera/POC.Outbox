@@ -24,6 +24,8 @@ builder.ConfigureSimpleMessageBrokerAgent();
 
 builder.Services.AddScoped<IInboxMessageProcessor, SimpleMessageBrokerInboxMessageProcessor>();
 
+builder.Services.AddAutoMapper(typeof(Program));
+
 builder.Services.AddHangfireServer();
 
 var app = builder.Build();

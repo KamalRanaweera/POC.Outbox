@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Outbox.Shared.Dtos;
 using Outbox.Shared.Strategy.Abstractions;
 using System;
 using System.Collections.Generic;
@@ -20,33 +22,50 @@ namespace Outbox.Shared.Strategy.Implementations
         private readonly string
             _messageBrokerSubscribeEndpoint,
             _messageBrokerUnsubscribeEndpoint,
-            _messageBrokerSubscriberListEndpoint;
+            _messageBrokerSubscriberListEndpoint,
+            _messageBrokerPublishEndpoint;
 
         private readonly string _messageConsumerRoot;
 
         private readonly HttpClient _httpClient;
+        private readonly IMapper _mapper;
         private readonly ILogger<SimpleMessageBrokerAgent> _logger;
 
-        public SimpleMessageBrokerAgent(IConfiguration configuration, IHttpClientFactory httpClientFactory, ILogger<SimpleMessageBrokerAgent> logger)
+        public SimpleMessageBrokerAgent(IConfiguration configuration, IHttpClientFactory httpClientFactory, IMapper mapper, ILogger<SimpleMessageBrokerAgent> logger)
         {
             _configuration = configuration;
 
+            #region Simple MessageBbroker endpoints
             var messageBrokerRoot = _configuration.GetSection("Outbox:MessageBrokerRoot").Value?.TrimEnd('/')!;
             _messageBrokerSubscribeEndpoint = $"{messageBrokerRoot}/api/consumers/subscribe";
             _messageBrokerUnsubscribeEndpoint = $"{messageBrokerRoot}/api/consumers/unsubscribe";
             _messageBrokerSubscriberListEndpoint = $"{messageBrokerRoot}/api/consumers/list";
+            _messageBrokerPublishEndpoint = $"{messageBrokerRoot}/api/publish";
+            #endregion
 
             _messageConsumerRoot = _configuration.GetSection("Outbox:MessageConsumerRoot").Value?.TrimEnd('/')!;
 
             _httpClient = httpClientFactory.CreateClient();
+
+            _mapper = mapper;
             _logger = logger;
         }
 
-        public async Task<bool> Publish(EventMessage message)
+        public async Task<bool> PublishToBroker(EventMessage message)
         {
-            Console.WriteLine("SimpleMessageBrokerAgent.Publish");
-            await Task.CompletedTask;
-            return true;
+            var messageDto = _mapper.Map<EventMessageDto>(message);
+            try
+            {
+                var content = new StringContent(JsonSerializer.Serialize(messageDto), Encoding.UTF8, "application/json");
+                var response = await _httpClient.PostAsync(_messageBrokerPublishEndpoint, content);
+                Console.WriteLine($"PublishToBroker: {JsonSerializer.Serialize(messageDto)} => {response.StatusCode}");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return false;
+            }
         }
 
         public async Task SubscribeToMessages(string inboxEndpoint)
