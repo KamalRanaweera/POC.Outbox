@@ -20,6 +20,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.ConfigureLogging();
 builder.ConfigureSimpleMessageBrokerAgent();
 
 builder.Services.AddScoped<IInboxMessageProcessor, SimpleMessageBrokerInboxMessageProcessor>();

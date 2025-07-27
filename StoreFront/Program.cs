@@ -28,6 +28,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options => { options.UseInlineDefinitionsForEnums(); });
 
+builder.ConfigureLogging();
 builder.ConfigureSimpleMessageBrokerAgent();
 
 builder.Services.AddScoped<IInventoryService, InventoryService>();
