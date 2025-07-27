@@ -29,7 +29,7 @@ namespace StoreFront.Services
                     var inventoryItem = _db.Inventory.FirstOrDefault(inventoryRecord => inventoryRecord.Id == item.InventoryRecordId);
                     if (inventoryItem == null)
                     {
-                        _logger.LogWarning($"Item ID {item.InventoryRecordId}: not found in the enventory.");
+                        _logger.LogWarning($"Item ID {item.InventoryRecordId}: not found in the inventory.");
                         return false;
                     }
 
