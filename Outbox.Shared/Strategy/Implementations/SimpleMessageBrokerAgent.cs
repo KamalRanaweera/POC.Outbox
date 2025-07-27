@@ -46,7 +46,7 @@ namespace Outbox.Shared.Strategy.Implementations
         {
             Console.WriteLine("SimpleMessageBrokerAgent.Publish");
             await Task.CompletedTask;
-            return false;
+            return true;
         }
 
         public async Task SubscribeToMessages(string inboxEndpoint)

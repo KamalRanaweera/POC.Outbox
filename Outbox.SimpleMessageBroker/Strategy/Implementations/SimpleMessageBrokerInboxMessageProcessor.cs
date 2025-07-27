@@ -7,9 +7,9 @@ namespace Outbox.SimpleMessageBroker.Strategy.Implementations
     {
         public async Task<bool> ProcessMessageAsync(EventMessage message)
         {
-            Console.WriteLine("StoreFrontInboxMessageProcessor.ProcessMessageAsync");
+            Console.WriteLine($"Message Broker Inbox: {message.EventName} > {message.Payload}");
             await Task.CompletedTask;
-            return false;
+            return true;
         }
     }
 }

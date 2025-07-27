@@ -7,9 +7,9 @@ namespace StoreFront.Strategy.Implementations
     {
         public async Task<bool> ProcessMessageAsync(EventMessage message)
         {
-            Console.WriteLine("StoreFrontInboxMessageProcessor.ProcessMessageAsync");
+            Console.WriteLine($"Store Front Inbox: {message.EventName} > {message.Payload}");
             await Task.CompletedTask;
-            return false;
+            return true;
         }
     }
 }
