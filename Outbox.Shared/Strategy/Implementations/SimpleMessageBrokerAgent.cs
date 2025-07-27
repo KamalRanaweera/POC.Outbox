@@ -39,7 +39,7 @@ namespace Outbox.Shared.Strategy.Implementations
             _httpClient = httpClientFactory.CreateClient();
         }
 
-        public async Task<bool> Publish(string eventName, object payload)
+        public async Task<bool> Publish(EventMessage message)
         {
             return false;
         }

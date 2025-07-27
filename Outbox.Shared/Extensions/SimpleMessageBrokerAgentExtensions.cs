@@ -41,7 +41,6 @@ namespace Outbox.Shared.Extensions
                     throw new Exception("Could not resolve IMessageBrokerAgent of type SimpleMessageBrokerAgent");
                 }
             }
-
         }
     }
 }

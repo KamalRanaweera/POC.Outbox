@@ -8,6 +8,6 @@ namespace Outbox.Shared.Strategy.Abstractions
 {
     public interface IMessageBrokerAgent
     {
-        Task<bool> Publish(string eventName, object payload);
+        Task<bool> Publish(EventMessage message);
     }
 }

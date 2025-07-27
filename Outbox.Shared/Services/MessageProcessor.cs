@@ -23,34 +23,34 @@ namespace Outbox.OutboxShared.Services
             _logger = logger;
         }
 
-        public async Task ProcessMessagesAsync(CancellationToken cancellationToken)
+        public async Task ProcessMessagesAsync()
         {
             var messages = await _dbContext.EventMessages
                 .Where(m => !m.Processed)
-                .ToListAsync(cancellationToken);
+                .ToListAsync();
 
             foreach (var message in messages)
                 await ProcessMessageAsync(message);
 
-            await _dbContext.SaveChangesAsync(cancellationToken);
+            await _dbContext.SaveChangesAsync();
         }
 
-        public async Task ProcessMessageByIdAsync(Guid messageId, CancellationToken cancellationToken)
+        public async Task ProcessMessageByIdAsync(Guid messageId)
         {
             var message = await _dbContext.EventMessages
-                .FirstOrDefaultAsync(m => m.Id == messageId, cancellationToken);
+                .FirstOrDefaultAsync(m => m.Id == messageId);
 
             if (message is null)
                 return;
 
             await ProcessMessageAsync(message);
-            await _dbContext.SaveChangesAsync(cancellationToken);
+            await _dbContext.SaveChangesAsync();
         }
 
         private async Task ProcessMessageAsync(EventMessage message)
         {
             if(message.MessageType == MessageType.Outbox)
-                message.Processed = await _messageBrokerAgent.Publish(message.EventName, message.Payload);
+                message.Processed = await _messageBrokerAgent.Publish(message);
             else
                 message.Processed = await _inboxMessageProcessor.ProcessMessageAsync(message);
 

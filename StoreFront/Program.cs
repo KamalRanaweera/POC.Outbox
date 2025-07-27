@@ -1,6 +1,7 @@
 ﻿using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using Outbox.Shared.Extensions;
+using Outbox.Shared.Interfaces;
 using StoreFront.Interfaces;
 using StoreFront.Models;
 using StoreFront.Services;
@@ -45,5 +46,12 @@ app.MapControllers();
 
 // Register at the message broker for receiving messsages
 await app.UseSimpleMessageBrokerAgent("/inbox");
+
+// Configure recurrent Hangfire job to process event messages
+RecurringJob.AddOrUpdate<IMessageProcessor>(
+    "message-processor-job",
+    processor => processor.ProcessMessagesAsync(),
+    "*/10 * * * * *" // every 10 seconds
+);
 
 app.Run();

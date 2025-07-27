@@ -8,7 +8,7 @@ namespace Outbox.Shared.Interfaces
 {
     public interface IMessageProcessor
     {
-        Task ProcessMessagesAsync(CancellationToken cancellationToken);
-        Task ProcessMessageByIdAsync(Guid messageId, CancellationToken cancellationToken);
+        Task ProcessMessagesAsync();
+        Task ProcessMessageByIdAsync(Guid messageId);
     }
 }
