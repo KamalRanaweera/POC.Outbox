@@ -1,4 +1,6 @@
 ﻿
+using System.Text.Json.Serialization;
+
 namespace ShipmentProcessor.Models
 {
     public class Shipment
@@ -10,5 +12,6 @@ namespace ShipmentProcessor.Models
         public DateTime? UpdatedAt { get; set; }
     }
 
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum ShipmentStatus { Open = 0, InProgress, Complete}
 }

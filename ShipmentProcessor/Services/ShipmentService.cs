@@ -26,7 +26,7 @@ namespace ShipmentProcessor.Services
             return await _db.Shipments.Where(shipment => shipment.OrderId == orderId).FirstOrDefaultAsync();
         }
 
-        public async Task<bool> CompleteShipment(Guid shipmentId)
+        public async Task<bool> UpdateShipment(Guid shipmentId, ShipmentStatus status)
         {
             try
             {
@@ -36,14 +36,14 @@ namespace ShipmentProcessor.Services
                 if (shipment == null)
                     return false;
 
-                shipment.ShipmentStatus = ShipmentStatus.Complete;
+                shipment.ShipmentStatus = status;
 
                 // Save the event message to be published by the message broker agent
                 var eventMessage = new EventMessage
                 {
                     Id = Guid.NewGuid(),
                     MessageType = MessageType.Outbox,
-                    EventName = EventNames.OrderComplete,
+                    EventName = status == ShipmentStatus.Complete ? EventNames.OrderComplete : EventNames.OrderInProgress,
                     Payload = shipment.OrderId.ToString(),
                 };
                 _db.EventMessages.Add(eventMessage);
@@ -51,7 +51,7 @@ namespace ShipmentProcessor.Services
                 await _db.SaveChangesAsync();
                 await tx.CommitAsync();
 
-                Console.WriteLine($"Completed shipment: <order ID:{shipment.OrderId}");
+                Console.WriteLine($"Sending event {eventMessage.EventName} for order ID: {shipment.OrderId}");
                 return true;
             }
             catch (Exception)

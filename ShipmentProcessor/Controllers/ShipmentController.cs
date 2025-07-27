@@ -35,12 +35,15 @@ namespace ShipmentProcessor.Controllers
             }
         }
 
-        [HttpPost("complete-shipment")]
-        public async Task<IActionResult> CompleteShipment(Guid shipmentId)
+        [HttpPost("update-shipment")]
+        public async Task<IActionResult> UpdateShipment(Guid shipmentId, ShipmentStatus status)
         {
             try
             {
-                return Ok(await _shipmentService.CompleteShipment(shipmentId));
+                if (!(status == ShipmentStatus.InProgress || status == ShipmentStatus.Complete))
+                    return BadRequest("status must be either InProgress or Complete");
+
+                return Ok(await _shipmentService.UpdateShipment(shipmentId, status));
             }
             catch (Exception)
             {

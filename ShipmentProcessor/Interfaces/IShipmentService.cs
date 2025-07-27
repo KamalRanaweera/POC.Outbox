@@ -6,7 +6,7 @@ namespace ShipmentProcessor.Interfaces
     {
         public Task<List<Shipment>> ListPendingShipments();
         public Task<Shipment?> GetShipment(int orderId);
-        public Task<bool> CompleteShipment(Guid shipmentId);
+        public Task<bool> UpdateShipment(Guid shipmentId, ShipmentStatus status);
 
     }
 }
