@@ -58,7 +58,7 @@ namespace Outbox.Shared.Strategy.Implementations
             {
                 var content = new StringContent(JsonSerializer.Serialize(messageDto), Encoding.UTF8, "application/json");
                 var response = await _httpClient.PostAsync(_messageBrokerPublishEndpoint, content);
-                Console.WriteLine($"PublishToBroker: {JsonSerializer.Serialize(messageDto)} => {response.StatusCode}");
+                Console.WriteLine($"{DateTime.Now}: PublishToBroker: {JsonSerializer.Serialize(messageDto)} => {response.StatusCode}");
                 return true;
             }
             catch (Exception ex)

@@ -25,8 +25,6 @@ namespace Outbox.OutboxShared.Services
 
         public async Task ProcessMessagesAsync()
         {
-            Console.WriteLine("Called ProcessMessagesAsync()");
-
             var messages = await _dbContext.EventMessages
                 .Where(m => !m.Processed)
                 .ToListAsync();

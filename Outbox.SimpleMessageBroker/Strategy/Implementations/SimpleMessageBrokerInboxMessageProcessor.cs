@@ -5,6 +5,8 @@ using Outbox.Shared.Dtos;
 using Outbox.Shared.Strategy.Abstractions;
 using Outbox.SimpleMessageBroker.Models;
 using System.Net.Http;
+using System.Text;
+using System.Text.Json;
 
 namespace Outbox.SimpleMessageBroker.Strategy.Implementations
 {
@@ -33,18 +35,27 @@ namespace Outbox.SimpleMessageBroker.Strategy.Implementations
             var messageDto = _mapper.Map<EventMessageDto>(message);
             bool success = true;
             foreach (var consumer in consumers)
-                success &= await PostMessage(consumer, messageDto);
+                success &= await PostToConsumer(consumer, messageDto);
 
 
             await Task.CompletedTask;
             return success;
         }
 
-        private async Task<bool> PostMessage(MessageConsumer consumer, EventMessageDto messageDto)
+        private async Task<bool> PostToConsumer(MessageConsumer consumer, EventMessageDto messageDto)
         {
-            Console.WriteLine($"{DateTime.Now}: Message Broker PostMessage: <{messageDto.EventName}, {messageDto.Payload}> to {consumer.Endpoint}");
-            await Task.CompletedTask;
-            return true;
+            try
+            {
+                var content = new StringContent(JsonSerializer.Serialize(messageDto), Encoding.UTF8, "application/json");
+                var response = await _httpClient.PostAsync(consumer.Endpoint, content);
+                Console.WriteLine($"PostToConsumer: {consumer.Endpoint} {JsonSerializer.Serialize(messageDto)} => {response.StatusCode}");
+                return response.StatusCode == System.Net.HttpStatusCode.OK;
+            }
+            catch (Exception)
+            {
+                // Failed to deliver the message 
+                return false;
+            }
         }
     }
 }
