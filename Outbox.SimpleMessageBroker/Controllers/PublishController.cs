@@ -12,8 +12,8 @@ namespace Outbox.SimpleMessageBroker.Controllers
     [ApiController]
     public class PublishController : SimpleHttpInboxController
     {
-        public PublishController(EventDbContext db)
-            : base(db)
+        public PublishController(EventDbContext db, ILogger<PublishController> logger)
+            : base(db, logger)
         {
         }
 

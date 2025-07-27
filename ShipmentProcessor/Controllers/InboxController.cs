@@ -9,8 +9,8 @@ namespace ShipmentProcessor.Controllers
     [ApiController]
     public class InboxController : SimpleHttpInboxController
     {
-        public InboxController(EventDbContext db)
-            : base(db)
+        public InboxController(EventDbContext db, ILogger<InboxController> logger)
+            : base(db, logger)
         {
         }
     }

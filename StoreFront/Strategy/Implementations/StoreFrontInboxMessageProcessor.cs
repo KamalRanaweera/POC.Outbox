@@ -5,6 +5,11 @@ namespace StoreFront.Strategy.Implementations
 {
     public class StoreFrontInboxMessageProcessor : IInboxMessageProcessor
     {
+        public StoreFrontInboxMessageProcessor()
+        {
+
+        }
+
         public async Task<bool> ProcessMessageAsync(EventMessage message)
         {
             Console.WriteLine($"{DateTime.Now}: Store Front Inbox: <{message.EventName}, {message.Payload}>");
