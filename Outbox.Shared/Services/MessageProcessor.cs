@@ -25,6 +25,8 @@ namespace Outbox.OutboxShared.Services
 
         public async Task ProcessMessagesAsync()
         {
+            Console.WriteLine("Called ProcessMessagesAsync()");
+
             var messages = await _dbContext.EventMessages
                 .Where(m => !m.Processed)
                 .ToListAsync();
@@ -33,6 +35,20 @@ namespace Outbox.OutboxShared.Services
                 await ProcessMessageAsync(message);
 
             await _dbContext.SaveChangesAsync();
+        }
+
+        public void ProcessMessages()
+        {
+            Console.WriteLine("Called ProcessMessages()");
+
+            var messages = _dbContext.EventMessages
+                .Where(m => !m.Processed)
+                .ToList();
+
+            foreach (var message in messages)
+                ProcessMessageAsync(message).Wait();
+
+            _dbContext.SaveChanges();
         }
 
         public async Task ProcessMessageByIdAsync(Guid messageId)

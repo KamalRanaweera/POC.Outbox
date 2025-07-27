@@ -1,7 +1,9 @@
 ﻿using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using Outbox.Shared.Extensions;
+using Outbox.Shared.Strategy.Abstractions;
 using Outbox.SimpleMessageBroker.Models;
+using Outbox.SimpleMessageBroker.Strategy.Implementations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,17 +20,21 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.ConfigureSimpleMessageBrokerAgent();
+
+builder.Services.AddScoped<IInboxMessageProcessor, SimpleMessageBrokerInboxMessageProcessor>();
+
 builder.Services.AddHangfireServer();
 
 var app = builder.Build();
 app.UseHangfireDashboard("/hangfire");
+app.ScheduleHangfireRecurrentJobRunner("simple-message-broker-job-runner", "*/10 * * * * *"); // every 10 seconds
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    app.UseHangfireDashboard("/hangfire");
 }
 
 app.UseHttpsRedirection();

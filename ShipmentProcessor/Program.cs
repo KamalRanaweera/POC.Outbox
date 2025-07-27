@@ -1,6 +1,8 @@
 ﻿using Hangfire;
 using Outbox.Shared.Extensions;
+using Outbox.Shared.Strategy.Abstractions;
 using ShipmentProcessor.Models;
+using ShipmentProcessor.Strategy.Implementations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +23,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.ConfigureSimpleMessageBrokerAgent();
+
+builder.Services.AddScoped<IInboxMessageProcessor, ShipmentProcessorInboxMessageProcessor>();
+
+builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.AddAuthorization();
 builder.Services.AddControllers();
@@ -43,5 +49,6 @@ app.MapControllers();
 
 // Register at the message broker for receiving messsages
 await app.UseSimpleMessageBrokerAgent("/inbox");
+app.ScheduleHangfireRecurrentJobRunner("shipment-processor-job-runner", "*/10 * * * * *"); // every 10 seconds
 
 await app.RunAsync();

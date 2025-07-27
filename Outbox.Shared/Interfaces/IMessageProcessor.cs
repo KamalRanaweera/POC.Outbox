@@ -8,6 +8,7 @@ namespace Outbox.Shared.Interfaces
 {
     public interface IMessageProcessor
     {
+        void ProcessMessages();
         Task ProcessMessagesAsync();
         Task ProcessMessageByIdAsync(Guid messageId);
     }

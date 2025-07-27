@@ -10,8 +10,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-
+using Outbox.OutboxShared.Services;
 using Outbox.Shared.Controllers;
+using Outbox.Shared.Interfaces;
 using Outbox.Shared.Strategy.Abstractions;
 using Outbox.Shared.Strategy.Implementations;
 
@@ -23,6 +24,8 @@ namespace Outbox.Shared.Extensions
         {
             //Registering the SimpleMessageBrokerAgent service
             builder.Services.AddScoped<IMessageBrokerAgent, SimpleMessageBrokerAgent>();
+            builder.Services.AddScoped<IMessageProcessor, MessageProcessor>();
+            builder.Services.AddHangfireServer();
 
             builder.Services.AddHttpClient();
 

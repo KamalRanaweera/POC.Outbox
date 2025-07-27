@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Outbox.Shared.Strategy.Abstractions;
 using System;
 using System.Collections.Generic;
@@ -24,8 +25,9 @@ namespace Outbox.Shared.Strategy.Implementations
         private readonly string _messageConsumerRoot;
 
         private readonly HttpClient _httpClient;
+        private readonly ILogger<SimpleMessageBrokerAgent> _logger;
 
-        public SimpleMessageBrokerAgent(IConfiguration configuration, IHttpClientFactory httpClientFactory)
+        public SimpleMessageBrokerAgent(IConfiguration configuration, IHttpClientFactory httpClientFactory, ILogger<SimpleMessageBrokerAgent> logger)
         {
             _configuration = configuration;
 
@@ -37,20 +39,30 @@ namespace Outbox.Shared.Strategy.Implementations
             _messageConsumerRoot = _configuration.GetSection("Outbox:MessageConsumerRoot").Value?.TrimEnd('/')!;
 
             _httpClient = httpClientFactory.CreateClient();
+            _logger = logger;
         }
 
         public async Task<bool> Publish(EventMessage message)
         {
+            Console.WriteLine("SimpleMessageBrokerAgent.Publish");
+            await Task.CompletedTask;
             return false;
         }
 
         public async Task SubscribeToMessages(string inboxEndpoint)
         {
-            var inboxEndpointUrl = $"{_messageConsumerRoot}/api/{inboxEndpoint.Trim('/')}";
-            var content = new StringContent(JsonSerializer.Serialize(inboxEndpointUrl), Encoding.UTF8, "application/json");
+            try
+            {
+                var inboxEndpointUrl = $"{_messageConsumerRoot}/api/{inboxEndpoint.Trim('/')}";
+                var content = new StringContent(JsonSerializer.Serialize(inboxEndpointUrl), Encoding.UTF8, "application/json");
 
-            var response = await _httpClient.PostAsync(_messageBrokerSubscribeEndpoint, content);
-            Console.WriteLine($"Subscribe: {inboxEndpointUrl} at {_messageBrokerSubscribeEndpoint} => {response.StatusCode}");
+                var response = await _httpClient.PostAsync(_messageBrokerSubscribeEndpoint, content);
+                Console.WriteLine($"Subscribe: {inboxEndpointUrl} at {_messageBrokerSubscribeEndpoint} => {response.StatusCode}");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+            }
         }
     }
 }

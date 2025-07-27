@@ -1,10 +1,14 @@
 ﻿using Hangfire;
 using Microsoft.EntityFrameworkCore;
+using Outbox.OutboxShared.Services;
 using Outbox.Shared.Extensions;
 using Outbox.Shared.Interfaces;
+using Outbox.Shared.Models;
+using Outbox.Shared.Strategy.Abstractions;
 using StoreFront.Interfaces;
 using StoreFront.Models;
 using StoreFront.Services;
+using StoreFront.Strategy.Implementations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +20,7 @@ else
     builder.ConfigureSqlServer<StoreFrontDbContext>(connectionString);
 #endregion
 
+
 builder.Services.AddAuthorization();
 builder.Services.AddControllers();
 
@@ -24,8 +29,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.ConfigureSimpleMessageBrokerAgent();
+
 builder.Services.AddScoped<IInventoryService, InventoryService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IInboxMessageProcessor, StoreFrontInboxMessageProcessor>();
+
 builder.Services.AddAutoMapper(typeof(Program));
 
 var app = builder.Build();
@@ -46,12 +54,7 @@ app.MapControllers();
 
 // Register at the message broker for receiving messsages
 await app.UseSimpleMessageBrokerAgent("/inbox");
+app.ScheduleHangfireRecurrentJobRunner("storefront-job-runner", "*/10 * * * * *"); // every 10 seconds
 
-// Configure recurrent Hangfire job to process event messages
-RecurringJob.AddOrUpdate<IMessageProcessor>(
-    "message-processor-job",
-    processor => processor.ProcessMessagesAsync(),
-    "*/10 * * * * *" // every 10 seconds
-);
 
 app.Run();
