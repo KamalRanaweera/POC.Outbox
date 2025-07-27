@@ -45,7 +45,7 @@ namespace Outbox.Shared.Controllers
             catch(Exception ex)
             {
                 _logger.LogError($"{ex.Message}\n{ex.StackTrace}");
-                return StatusCode(500, "An unexpected error occurred. Please try again later.");
+                return StatusCode(500, "An unexpected error occurred.");
             }
 
             return Ok();

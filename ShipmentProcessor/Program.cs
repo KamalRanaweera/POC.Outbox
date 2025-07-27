@@ -1,7 +1,9 @@
 ﻿using Hangfire;
 using Outbox.Shared.Extensions;
 using Outbox.Shared.Strategy.Abstractions;
+using ShipmentProcessor.Interfaces;
 using ShipmentProcessor.Models;
+using ShipmentProcessor.Services;
 using ShipmentProcessor.Strategy.Implementations;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,6 +27,7 @@ builder.Services.AddSwaggerGen();
 builder.ConfigureSimpleMessageBrokerAgent();
 
 builder.Services.AddScoped<IInboxMessageProcessor, ShipmentProcessorInboxMessageProcessor>();
+builder.Services.AddScoped<IShipmentService, ShipmentService>();
 
 builder.Services.AddAutoMapper(typeof(Program));
 

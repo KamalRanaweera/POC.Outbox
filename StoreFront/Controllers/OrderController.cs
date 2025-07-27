@@ -36,7 +36,7 @@ namespace StoreFront.Controllers
             }
             catch (Exception)
             {
-                return BadRequest();
+                return StatusCode(500, "An unexpected error occurred.");
             }
 
         }

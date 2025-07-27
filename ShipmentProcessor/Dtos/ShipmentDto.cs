@@ -1,7 +1,8 @@
-﻿
-namespace ShipmentProcessor.Models
+﻿using ShipmentProcessor.Models;
+
+namespace ShipmentProcessor.Dtos
 {
-    public class Shipment
+    public class ShipmentDto
     {
         public Guid Id { get; set; }
         public int OrderId { get; set; }
@@ -9,6 +10,4 @@ namespace ShipmentProcessor.Models
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime? UpdatedAt { get; set; }
     }
-
-    public enum ShipmentStatus { Open = 0, InProgress, Complete}
 }

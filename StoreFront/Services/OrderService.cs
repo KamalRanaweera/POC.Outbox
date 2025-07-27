@@ -49,7 +49,7 @@ namespace StoreFront.Services
                 {
                     Id = Guid.NewGuid(),
                     MessageType = MessageType.Outbox,
-                    EventName = "OrderPlaced",
+                    EventName = EventNames.OrderPlaced,
                     Payload = order.Id.ToString(),
                 };
                 _db.EventMessages.Add(eventMessage);
@@ -64,29 +64,6 @@ namespace StoreFront.Services
                 return false;
 
             }
-
-            //var itemz = await _db.Inventory.FirstOrDefaultAsync(x => x.Id == itemId);
-            //if (item == null)
-            //    throw new Exception("Item not found");
-
-            //if (item.AvailableCount == 0)
-            //    throw new Exception("Out of stock");
-
-            //if (item.AvailableCount < amount)
-            //    throw new Exception("Insufficient stock");
-
-            //item.AvailableCount -= amount;
-            //item.OnHoldCount += amount;
-
-            //var eventMessage = new EventMessage
-            //{
-            //    Id = Guid.NewGuid(),
-            //    MessageType = MessageType.Outbox,
-            //    EventName = "OrderPlaced",
-            //    Payload = JsonSerializer.Serialize(new PurchaseOrder() { Id = Guid.NewGuid(), ItemId = itemId }),
-            //    CreatedAt = DateTime.UtcNow
-            //};
-            //_db.EventMessages.Add(eventMessage);
         }
     }
 }
