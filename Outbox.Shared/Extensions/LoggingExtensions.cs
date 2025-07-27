@@ -22,7 +22,7 @@ namespace Outbox.Shared.Extensions
             #endregion
 
             #region Configure Console Standar Output to a File
-            var consoleLogDir = Path.Combine(AppContext.BaseDirectory, "Logs");
+            var consoleLogDir = "Logs";
             Directory.CreateDirectory(consoleLogDir);
             var logFilePath = Path.Combine(consoleLogDir, "console.log");
             var fileStream = new FileStream(logFilePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
