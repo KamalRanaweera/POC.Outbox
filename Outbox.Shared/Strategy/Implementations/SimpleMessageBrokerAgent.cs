@@ -76,7 +76,7 @@ namespace Outbox.Shared.Strategy.Implementations
                 var content = new StringContent(JsonSerializer.Serialize(inboxEndpointUrl), Encoding.UTF8, "application/json");
 
                 var response = await _httpClient.PostAsync(_messageBrokerSubscribeEndpoint, content);
-                Console.WriteLine($"Subscribe: {inboxEndpointUrl} at {_messageBrokerSubscribeEndpoint} => {response.StatusCode}");
+                Console.WriteLine($"{DateTime.Now}: Subscribe: {inboxEndpointUrl} at {_messageBrokerSubscribeEndpoint} => {response.StatusCode}");
             }
             catch (Exception ex)
             {

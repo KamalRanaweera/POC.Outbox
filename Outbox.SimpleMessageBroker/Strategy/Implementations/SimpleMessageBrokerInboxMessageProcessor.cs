@@ -48,7 +48,7 @@ namespace Outbox.SimpleMessageBroker.Strategy.Implementations
             {
                 var content = new StringContent(JsonSerializer.Serialize(messageDto), Encoding.UTF8, "application/json");
                 var response = await _httpClient.PostAsync(consumer.Endpoint, content);
-                Console.WriteLine($"PostToConsumer: {consumer.Endpoint} {JsonSerializer.Serialize(messageDto)} => {response.StatusCode}");
+                Console.WriteLine($"{DateTime.Now}: PostToConsumer: {consumer.Endpoint} {JsonSerializer.Serialize(messageDto)} => {response.StatusCode}");
                 return response.StatusCode == System.Net.HttpStatusCode.OK;
             }
             catch (Exception)

@@ -18,6 +18,7 @@ namespace Outbox.SimpleMessageBroker.Controllers
         [HttpPost("subscribe")]
         public async Task Subscribe([FromBody] string endpoint)
         {
+            Console.WriteLine($"{DateTime.Now}: Subscription received: {endpoint}");
             if(!await _context.Consumers.AnyAsync(c => c.Endpoint == endpoint))
             {
                 _context.Consumers.Add(new MessageConsumer() { Id = Guid.NewGuid(), Endpoint = endpoint });

@@ -51,7 +51,7 @@ namespace ShipmentProcessor.Services
                 await _db.SaveChangesAsync();
                 await tx.CommitAsync();
 
-                Console.WriteLine($"Sending event {eventMessage.EventName} for order ID: {shipment.OrderId}");
+                Console.WriteLine($"{DateTime.Now}: Sending event {eventMessage.EventName} for order ID: {shipment.OrderId}");
                 return true;
             }
             catch (Exception)

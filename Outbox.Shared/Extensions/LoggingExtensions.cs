@@ -12,7 +12,6 @@ namespace Outbox.Shared.Extensions
             Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(builder.Configuration) // reads from appsettings.json
                 .Enrich.FromLogContext()
-                .WriteTo.Console()
                 .WriteTo.File("Logs/log-.txt", rollingInterval: RollingInterval.Day)
                 .CreateLogger();
 
