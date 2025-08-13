@@ -31,7 +31,7 @@ builder.Services.AddHangfireServer();
 
 var app = builder.Build();
 app.UseHangfireDashboard("/hangfire");
-app.ScheduleHangfireRecurrentJobRunner("simple-message-broker-job-runner", "*/10 * * * * *"); // every 10 seconds
+app.ScheduleHangfireRecurrentJobRunner("simple-message-broker-job-runner", "*/5 * * * * *"); // every 5 seconds
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

@@ -53,6 +53,6 @@ app.MapControllers();
 
 // Register at the message broker for receiving messsages
 await app.UseSimpleMessageBrokerAgent("/inbox");
-app.ScheduleHangfireRecurrentJobRunner("shipment-processor-job-runner", "*/10 * * * * *"); // every 10 seconds
+app.ScheduleHangfireRecurrentJobRunner("shipment-processor-job-runner", "*/5 * * * * *"); // every 5 seconds
 
 await app.RunAsync();
